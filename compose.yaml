@@ -1,0 +1,77 @@
+name: lab
+
+x-logging: &default-logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+services:
+  mongo:
+    image: mongo:8.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-lab_admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in .env}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-lab}
+    volumes: [mongo-data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--username", "${MONGO_ROOT_USERNAME:-lab_admin}", "--password", "${MONGO_ROOT_PASSWORD}", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping').ok"]
+      interval: 7s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    logging: *default-logging
+    networks: [private]
+
+  backend:
+    image: ${BACKEND_IMAGE:-lab-back:local}
+    build:
+      context: ../lab_back
+    environment:
+      HTTP_ADDR: :8080
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME:-lab_admin}:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin
+      MONGO_DATABASE: ${MONGO_DATABASE:-lab}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      UPLOAD_DIR: /app/data/uploads
+      PUBLIC_BASE_URL: http://localhost:${PUBLIC_PORT:-8081}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-20}
+      OCR_MODE: local
+      TESSERACT_LANG: ${TESSERACT_LANG:-rus+eng}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      CORS_ORIGINS: http://localhost:${PUBLIC_PORT:-8081}
+    volumes: [uploads-data:/app/data/uploads]
+    depends_on:
+      mongo: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp:size=128m,mode=1777]
+    security_opt: [no-new-privileges:true]
+    logging: *default-logging
+    networks: [private]
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-lab-front:local}
+    build:
+      context: ../lab_front
+      args: { EXPO_PUBLIC_API_URL: /api/v1 }
+    ports: ["${PUBLIC_PORT:-8081}:8080"]
+    depends_on:
+      backend: { condition: service_healthy }
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/var/cache/nginx:size=32m, /var/run:size=2m]
+    security_opt: [no-new-privileges:true]
+    logging: *default-logging
+    networks: [private]
+
+networks:
+  private:
+
+volumes:
+  mongo-data:
+  uploads-data:
