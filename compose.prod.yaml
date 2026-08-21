@@ -13,7 +13,5 @@ services:
   frontend:
     build: !reset null
     image: ${FRONTEND_IMAGE:-idrisovmarat/lab_front:latest}
-    ports: !override
-      - ${PUBLIC_BIND_ADDRESS:-0.0.0.0}:${PUBLIC_PORT:-80}:8080
     mem_limit: 128m
     cpus: 0.25
