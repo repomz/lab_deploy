@@ -31,14 +31,14 @@ services:
       MONGO_DATABASE: ${MONGO_DATABASE:-lab}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
       UPLOAD_DIR: /app/data/uploads
-      PUBLIC_BASE_URL: http://localhost:${PUBLIC_PORT:-8081}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:${PUBLIC_PORT:-8081}}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-20}
       OCR_MODE: local
       TESSERACT_LANG: ${TESSERACT_LANG:-rus+eng}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-v4-flash}
-      CORS_ORIGINS: http://localhost:${PUBLIC_PORT:-8081}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:${PUBLIC_PORT:-8081}}
     volumes: [uploads-data:/app/data/uploads]
     depends_on:
       mongo: { condition: service_healthy }

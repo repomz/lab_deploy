@@ -23,6 +23,11 @@ read_value() {
 mongo_password=$(read_value MONGO_ROOT_PASSWORD)
 jwt_secret=$(read_value JWT_SECRET)
 deepseek_key=$(read_value DEEPSEEK_API_KEY)
+public_port=$(read_value PUBLIC_PORT)
+public_base_url=$(read_value PUBLIC_BASE_URL)
+cors_origins=$(read_value CORS_ORIGINS)
+backend_image=$(read_value BACKEND_IMAGE)
+frontend_image=$(read_value FRONTEND_IMAGE)
 
 case "$mongo_password" in
   ""|replace-*) mongo_password=$(random_hex) ;;
@@ -30,6 +35,9 @@ esac
 case "$jwt_secret" in
   ""|replace-*) jwt_secret=$(random_hex) ;;
 esac
+[ -n "$public_port" ] || public_port=8081
+[ -n "$public_base_url" ] || public_base_url="http://localhost:$public_port"
+[ -n "$cors_origins" ] || cors_origins="$public_base_url"
 
 umask 077
 tmp_file="$ENV_FILE.tmp.$$"
@@ -39,14 +47,16 @@ MONGO_ROOT_USERNAME=lab_admin
 MONGO_ROOT_PASSWORD=$mongo_password
 MONGO_DATABASE=lab
 JWT_SECRET=$jwt_secret
-PUBLIC_PORT=8081
+PUBLIC_PORT=$public_port
+PUBLIC_BASE_URL=$public_base_url
+CORS_ORIGINS=$cors_origins
 MAX_UPLOAD_MB=20
 DEEPSEEK_API_KEY=$deepseek_key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-flash
 TESSERACT_LANG=rus+eng
-BACKEND_IMAGE=
-FRONTEND_IMAGE=
+BACKEND_IMAGE=$backend_image
+FRONTEND_IMAGE=$frontend_image
 EOF
 mv "$tmp_file" "$ENV_FILE"
 trap - EXIT HUP INT TERM
