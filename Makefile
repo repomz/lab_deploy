@@ -1,6 +1,9 @@
-.PHONY: up down logs ps pull backup
+.PHONY: init up down logs ps pull backup
 
-up:
+init:
+	./scripts/init-env.sh
+
+up: init
 	docker compose up --build --wait
 
 down:
