@@ -1,0 +1,10 @@
+[Unit]
+Description=Renew Lab HTTPS certificate
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/lab
+ExecStart=/usr/bin/docker compose -f compose.yaml -f compose.prod.yaml --profile maintenance run --rm certbot renew --webroot --webroot-path /var/www/certbot --quiet
+ExecStartPost=/usr/bin/docker compose -f compose.yaml -f compose.prod.yaml exec -T gateway nginx -s reload
