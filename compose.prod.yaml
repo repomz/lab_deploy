@@ -14,6 +14,11 @@ services:
     build: !reset null
     image: ${FRONTEND_IMAGE:-idrisovmarat/lab_front:latest}
     ports: !reset []
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     mem_limit: 128m
     cpus: 0.25
 
