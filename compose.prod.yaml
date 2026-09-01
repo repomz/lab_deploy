@@ -8,7 +8,7 @@ services:
     build: !reset null
     image: ${BACKEND_IMAGE:-idrisovmarat/lab_back:latest}
     mem_limit: 640m
-    cpus: 1.0
+    cpus: 1.5
 
   frontend:
     build: !reset null
