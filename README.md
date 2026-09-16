@@ -8,10 +8,14 @@ make up
 
 После запуска приложение доступно на `http://localhost:8081`, API проксируется через тот же origin.
 
-Production использует внешний nginx gateway с HTTPS-сертификатом для IP-адреса,
-а systemd timer ежедневно проверяет необходимость продления короткоживущего
-сертификата Let's Encrypt. Конфигурация gateway находится в `deploy/nginx.conf`,
-а unit-файлы — в `systemd/`.
+Production использует внешний nginx gateway с HTTPS-сертификатами для `ailab.su`,
+`www.ailab.su` и переходного доступа по IP-адресу. Единственный канонический
+origin приложения — `https://www.ailab.su`; bare domain и IP перенаправляют на
+него. `GET /health` и `GET /api/health` проверяют настоящий backend, а не SPA.
+Systemd timer ежедневно
+проверяет необходимость продления сертификатов Let's Encrypt. Конфигурация
+gateway находится в `deploy/nginx.conf`, общие маршруты — в
+`deploy/app-locations.conf`, а unit-файлы — в `systemd/`.
 
 DeepSeek подключается безопасным интерактивным скриптом, который не показывает
 ключ на экране и сохраняет `.env` с правами `600`:
