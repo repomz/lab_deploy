@@ -30,6 +30,8 @@ sudo /opt/lab/scripts/configure-deepseek.sh
 
 Backend ограничивает DeepSeek глобально (30 запросов в минуту, 300 в час, максимум два одновременно, timeout 45 секунд) и отдельно ограничивает AI-endpoints каждого пользователя (6 запросов в минуту и 60 в час). Лимиты задаются переменными `DEEPSEEK_*` и `AI_USER_*` из примера `.env`; gateway rate limit остаётся дополнительной защитой для auth и OCR.
 
+Распознавание работает через durable MongoDB queue: HTTP upload быстро возвращает `202`, а отдельный Go worker захватывает задания с lease, обновляет progress и выполняет до трёх попыток. `OCR_WORKER_COUNT` следует увеличивать только вместе с доступными CPU; для текущего VDS используется один worker.
+
 Для открытого интернета compose следует поставить за TLS reverse proxy и закрыть прямой доступ к MongoDB. Этот MVP не предназначен для хранения реальных медицинских данных до выполнения пунктов из [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Production VDS
