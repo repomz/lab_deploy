@@ -27,9 +27,13 @@ awk -v key="$api_key" '
   BEGIN { found = 0 }
   /^DEEPSEEK_API_KEY=/ { print "DEEPSEEK_API_KEY=" key; found = 1; next }
   /^DEEPSEEK_MODEL=/ { print "DEEPSEEK_MODEL=deepseek-v4-flash"; next }
+  /^DEEPSEEK_VISION_MODEL=/ { print "DEEPSEEK_VISION_MODEL=deepseek-flash"; vision = 1; next }
+  /^DEEPSEEK_VISION_TIMEOUT_SECONDS=/ { print "DEEPSEEK_VISION_TIMEOUT_SECONDS=120"; vision_timeout = 1; next }
   { print }
   END {
     if (!found) print "DEEPSEEK_API_KEY=" key
+    if (!vision) print "DEEPSEEK_VISION_MODEL=deepseek-flash"
+    if (!vision_timeout) print "DEEPSEEK_VISION_TIMEOUT_SECONDS=120"
   }
 ' "$env_file" > "$tmp_file"
 install -m 600 "$tmp_file" "$env_file"
