@@ -1,0 +1,14 @@
+[Unit]
+Description=Create and verify Lab MongoDB backup
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/lab
+ExecStart=/opt/lab/scripts/backup.sh
+UMask=0077
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=true
+PrivateTmp=true

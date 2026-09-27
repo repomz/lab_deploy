@@ -29,5 +29,4 @@ pull:
 	docker compose pull
 
 backup:
-	mkdir -p backups
-	docker compose exec -T mongo mongodump --archive --gzip --username "$${MONGO_ROOT_USERNAME:-lab_admin}" --password "$${MONGO_ROOT_PASSWORD}" --authenticationDatabase admin > backups/lab-$$(date +%Y%m%d-%H%M%S).archive.gz
+	./scripts/backup.sh

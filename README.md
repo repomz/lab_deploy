@@ -17,6 +17,18 @@ Systemd timer ежедневно
 gateway находится в `deploy/nginx.conf`, общие маршруты — в
 `deploy/app-locations.conf`, а unit-файлы — в `systemd/`.
 
+MongoDB автоматически архивируется каждый день. Архив сначала записывается во
+временный файл, проверяется `gzip` и безопасным `mongorestore --dryRun`, только
+после этого атомарно публикуется в каталоге резервных копий. По умолчанию
+хранятся 14 дней; `BACKUP_DIR` можно направить на отдельный подключённый диск.
+
+```bash
+sudo install -m 0644 systemd/lab-backup.service systemd/lab-backup.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now lab-backup.timer
+sudo systemctl start lab-backup.service
+```
+
 DeepSeek подключается безопасным интерактивным скриптом, который не показывает
 ключ на экране и сохраняет `.env` с правами `600`:
 
