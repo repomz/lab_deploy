@@ -1,0 +1,78 @@
+{
+  "version": "0.18.0",
+  "date": "2026-10-28",
+  "timezone": "Asia/Tomsk",
+  "frontend_commit": "ad380ca8dbb785d85dd0a4423eefc7f4a346c187",
+  "backend_changed": false,
+  "database_changed": false,
+  "ci": {
+    "url": "https://github.com/repomz/lab_front/actions/runs/40547968028",
+    "result": "success",
+    "checks": ["TypeScript", "dynamics regression tests", "production web export", "web build verifier", "Docker image publication"]
+  },
+  "deployment": {
+    "origin": "https://www.ailab.su",
+    "image": "idrisovmarat/lab_front@sha256:5b9c8b49d5d6f131ddeab490c00718e548534f8fcb7dcbcbdc247ea089267c97",
+    "rollback_tag": "idrisovmarat/lab_front:rollback-20261028-figma",
+    "rollback_image": "sha256:0641599ac9593d0311e692f32d926b960965bab89f9248f681f899baaf4c9928",
+    "updated_services": ["frontend"],
+    "healthy_services_after_rollout": ["frontend", "backend", "mongo", "gateway"],
+    "served_bundle_matches_local": "index-5d4cf47c64d23d632048cd74b0e7dc1d.js",
+    "public_health": "ok",
+    "public_api_health": "ok",
+    "unauthenticated_analyses_status": 401,
+    "public_browser": "0.18.0 welcome screen rendered; no captured console errors"
+  },
+  "visual_check": {
+    "method": "Interactive browser checks against local production export and synthetic API; Figma design-to-code context and local exported SVGs",
+    "viewports": ["320x568", "393x805", "1280x900", "2560x1440"],
+    "themes": ["light", "dark"],
+    "screens": [
+      "welcome/splash/login/PIN", "registration role/profile/personal-details steps without account creation",
+      "patient home", "laboratory list", "diagnostic report", "discharge report", "specialist report",
+      "result table and AI summary", "PDF viewer shell", "dynamics list/search/filters/chart/history",
+      "AI welcome/conversation/chat history", "menu/settings", "profile", "health summary",
+      "reference list/article", "support", "about/version", "upload/processing consent", "confirmation dialogs"
+    ],
+    "functional_checks": [
+      "Theme persisted after reload; selection located only in menu settings",
+      "Group collapse; last document reachable above dock",
+      "Prefix-only marker search; latest abnormal filter; specimen groups remain separate",
+      "History opens selected analysis from both dynamics entry points",
+      "AI back returns home; synthetic message receives a synthetic reply",
+      "Document/chat deletion cancellation preserves records",
+      "Profile failure is displayed without false success",
+      "Health summary opened twice with one API request",
+      "2K DOM bounds: no body horizontal overflow; all dock controls within viewport",
+      "82 downloaded Figma SVG files are non-empty"
+    ],
+    "additional_role_smoke": ["doctor home", "empty patient directory", "schedule setup"],
+    "fixed_during_verification": [
+      "Native shadowOpacity overrode web card shadows",
+      "Missing exact discharge icon",
+      "AI back action was not wired",
+      "Dynamics history from result view was disabled",
+      "Negative numeric values need a real chart zero baseline",
+      "Dark settings/dialog/consent/profile/chat-history contrast",
+      "Reference cards compressed and overlapped at small heights",
+      "Settings needed scrolling at small heights",
+      "Dock width/gutters on small and 2K displays",
+      "Qualitative values should not offer a numeric dynamics action"
+    ]
+  },
+  "limits": [
+    "This is a web UI release, not exhaustive native iOS/Android device or clinical validation.",
+    "No production patient record was edited or deleted; no real medical document or DeepSeek request was used for UI tests.",
+    "Native camera, microphone permissions, OS sharing/printing, physical keyboard and iOS rubber-band behavior were not verified.",
+    "PDF preparation/viewer shell was checked with a synthetic PDF; delivery to an external recipient was not performed.",
+    "Actual destructive operations, admin writes, all doctor workflows and OCR accuracy were not exercised end-to-end.",
+    "Figma MCP quota exhausted during follow-up reads; already fetched design context/assets remained available.",
+    "An HTTPS connection timed out once; retry returned 401 as expected. A separate bare-domain DNS lookup failed. These infrastructure observations are not resolved by this UI release."
+  ],
+  "screenshots": {
+    "home-light.jpg": "local synthetic patient home",
+    "settings-dark.jpg": "local dark appearance settings",
+    "reference-320.jpg": "local corrected reference list at 320x568",
+    "live-auth-mobile.jpg": "published 0.18.0 welcome screen"
+  }
+}
